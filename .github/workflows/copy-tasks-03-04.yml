@@ -1,0 +1,42 @@
+name: Copy SIG Tasks 03 and 04
+
+on:
+  push:
+    paths:
+      - '.github/workflows/copy-tasks-03-04.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  copy-tasks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout my repository
+        uses: actions/checkout@v4
+
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          repository: Nithishkannan-Ganesan/Cloud-and-Networking-SIG
+          ref: main
+          path: source-repo
+
+      - name: Copy Tasks 03 and 04
+        run: |
+          mkdir -p "SIG/TASK 03" "SIG/TASK 04"
+          cp -R "source-repo/SIG/TASK 03/." "SIG/TASK 03/"
+          cp -R "source-repo/SIG/TASK 04/." "SIG/TASK 04/"
+          rm -rf source-repo
+
+      - name: Commit and push copied tasks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "SIG/TASK 03" "SIG/TASK 04"
+          if git diff --cached --quiet; then
+            echo "Tasks 03 and 04 are already up to date."
+          else
+            git commit -m "Copy SIG Tasks 03 and 04"
+            git push origin main
+          fi
